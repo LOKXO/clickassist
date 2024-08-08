@@ -1,0 +1,95 @@
+import time
+import random
+import threading
+import ctypes
+import sys
+
+# Configuration section
+config = {
+    'toggle_key': '\\',  # Key to toggle the auto-clicker on/off
+    'click_button': 'left',  # Button to simulate click ('left', 'right', or 'middle')
+    'min_clicks': 7,  # Minimum number of clicks per activation
+    'max_clicks': 10,  # Maximum number of clicks per activation
+    'min_delay': 0.038,  # Minimum delay between clicks in seconds
+    'max_delay': 0.047,  # Maximum delay between clicks in seconds
+    'verbose': True,  # Control print statements for performance
+}
+
+
+# ----------------------------------------------------------------------------------
+
+class AutoClicker:
+    def __init__(self, config):
+        self.toggle_key = config['toggle_key']
+        self.click_button = self.get_click_button(config['click_button'])
+        self.min_clicks = config['min_clicks']
+        self.max_clicks = config['max_clicks']
+        self.min_delay = config['min_delay']
+        self.max_delay = config['max_delay']
+        self.verbose = config['verbose']
+
+        self.clicks_activated = False
+        self.listening_for_click = False
+        self.running = True  # This now only controls the main loop, not tied directly to activation status
+
+        self.register_hotkey()
+
+    def get_click_button(self, button_str):
+        button_map = {
+            'left': 0x01,
+            'right': 0x02,
+            'middle': 0x04
+        }
+        return button_map.get(button_str.lower(), 0x01)  # Default to left click
+
+    def toggle_clicker(self):
+        self.clicks_activated = not self.clicks_activated
+        self.listening_for_click = self.clicks_activated
+        if self.verbose:
+            print(f"AutoClicker {'activated' if self.clicks_activated else 'in standby mode'}")
+
+    def perform_clicks(self):
+        num_clicks = random.randint(self.min_clicks, self.max_clicks)
+        for _ in range(num_clicks):
+            time.sleep(random.uniform(self.min_delay, self.max_delay))
+            self.click()
+            if self.verbose:
+                print("Click!")
+        self.listening_for_click = True  # Ready to listen for the next click
+
+    def click(self):
+        ctypes.windll.user32.mouse_event(0x02, 0, 0, 0, 0)  # Left click down
+        ctypes.windll.user32.mouse_event(0x04, 0, 0, 0, 0)  # Left click up
+
+    def register_hotkey(self):
+        if not ctypes.windll.user32.RegisterHotKey(None, 1, 0x04, ord(self.toggle_key)):
+            sys.exit(1)
+
+        def handle_hotkey(msg):
+            if msg.wParam == 1:
+                self.toggle_clicker()
+            return True
+
+        ctypes.windll.user32.SetWindowsHookExA(13, handle_hotkey, ctypes.windll.kernel32.GetModuleHandleA(None), 0)
+
+    def start(self):
+        try:
+            while self.running:  # This loop now keeps running regardless of clicks_activated status
+                msg = ctypes.windll.user32.GetMessageW(None, 0, 0, 0)
+                if msg == 0x0012:  # WM_QUIT
+                    break
+                ctypes.windll.user32.TranslateMessage(ctypes.byref(msg))
+                ctypes.windll.user32.DispatchMessageW(ctypes.byref(msg))
+                if self.clicks_activated and self.listening_for_click:
+                    for _ in range(100):  # Check for clicks 100 times per second
+                        if ctypes.windll.user32.GetAsyncKeyState(self.click_button) & 0x8000:
+                            self.listening_for_click = False
+                            threading.Thread(target=self.perform_clicks, daemon=True).start()
+                            break
+                    time.sleep(0.01)
+        except KeyboardInterrupt:
+            print("AutoClicker shutting down.")
+
+if __name__ == "__main__":
+    auto_clicker = AutoClicker(config)
+    auto_clicker.start()
