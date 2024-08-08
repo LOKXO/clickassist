@@ -1,35 +1,41 @@
-mostly by @sh1d0wg1m3r
-# clickassist
-AutoClicker Macro Script mainly for minecraft ( it is specifically designed for speed and safety since it is a really fancy autoclicker ) will add more stuff in the future
+
+# ClickAssist
+## Idea from @sh1d0wg1m3r
+
+This is a simple Python script that simulates automatic mouse clicks. It allows you to toggle the auto-clicking functionality with a configurable hotkey and customize various settings such as the click button, number of clicks, and delay between clicks.
+
 ## Features
-- **Minecraft-Focused**: Optimized for Minecraft to assist with grinding tasks, building, or combat.
-- **Macro-like Activation**: Only activates upon a manual mouse click, seamlessly integrating into your gameplay.
-- **Configurable Click Patterns**: Set the number and delay of clicks to mimic complex in-game actions.
-- **Selective Button Simulation**: Choose which mouse button to emulate, tailoring it for different in-game activities.
-- **Minimal Interruption**: Designed to quickly perform its function and allow continuation of gameplay.
-- **Verbose Mode**: Offers feedback when active, helping players monitor the script's operation.
 
-## Configuration
-Customize your CraftClicker by adjusting the `config` dictionary:
-
-- `toggle_key`: Key to toggle the clicker between active and standby modes.
-- `click_button`: Mouse button to be simulated.
-- `min_clicks`, `max_clicks`: Range of auto-clicks per activation.
-- `min_delay`, `max_delay`: Time intervals between each click, in seconds.
-- `verbose`: Enable or disable detailed logs.
+- Toggle auto-clicking with a configurable hotkey (default: `\`)
+- Simulate left, right, or middle mouse clicks
+- Randomize the number of clicks per activation (configurable range)
+- Randomize the delay between each click (configurable range)
+- Control verbosity of click logging
 
 ## Usage
-1. Install Python 3 and the `pynput` library.
-2. Edit the `config` settings to your preference.
-3. Launch the script: `python craftclicker.py`.
-4. Activate it by pressing the designated toggle key, then perform a manual mouse click to trigger your custom macro.
 
-## Dependencies
-- Python 3 ( working with 3.11.7)
-- pynput
+1. Configure the settings in the `config` dictionary at the beginning of the script.
+2. Run the script: `python auto_clicker.py`
+3. Press the configured toggle key (default: `\`) to activate or deactivate the auto-clicker.
+4. When activated, click anywhere on the screen to trigger a burst of automatic clicks.
+5. Press the toggle key again to deactivate the auto-clicker.
 
-## Ethical Use Disclaimer
-CraftClicker is created for educational and legitimate gaming purposes. Players are encouraged to use this tool responsibly, adhering to Minecraft's terms of service and community guidelines.
+## Requirements
 
-### AI-Enhanced Comments
-The comments and this documentation have been enhanced with AI technology, ensuring clarity and aiding users in maximizing their Minecraft gameplay experience with CraftClicker Forge.
+This script has no external dependencies and uses only built-in Python modules. It should work on any Windows system with Python installed.
+
+## Configuration
+
+You can customize the auto-clicker behavior by modifying the values in the `config` dictionary:
+
+- `toggle_key`: The key to toggle the auto-clicker on/off (default: `\\`)
+- `click_button`: The mouse button to simulate clicks (options: `'left'`, `'right'`, `'middle'`)
+- `min_clicks`: The minimum number of clicks per activation (default: 8)
+- `max_clicks`: The maximum number of clicks per activation (default: 9)
+- `min_delay`: The minimum delay between clicks in seconds (default: 0.038)
+- `max_delay`: The maximum delay between clicks in seconds (default: 0.047)
+- `verbose`: Control whether to print click logs or not (default: `True`)
+
+### Note
+
+This README file was improved with the help of AI
